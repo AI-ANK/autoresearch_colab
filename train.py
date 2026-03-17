@@ -198,10 +198,13 @@ class GPT(nn.Module):
         head_dim = self.config.n_embd // self.config.n_head
         cos, sin = self._precompute_rotary_embeddings(self.rotary_seq_len, head_dim)
         self.cos, self.sin = cos, sin
-        # Cast embeddings to training dtype (bf16 on Ampere+, fp16 on Turing)
-        self.transformer.wte.to(dtype=DTYPE)
-        for ve in self.value_embeds.values():
-            ve.to(dtype=DTYPE)
+        # Cast embeddings to bfloat16 for Ampere+ GPUs (saves memory, GradScaler disabled).
+        # For float16 (Turing/T4), keep embeddings in float32 so GradScaler can unscale
+        # their gradients — autocast handles the fp16 conversion during forward pass.
+        if DTYPE == torch.bfloat16:
+            self.transformer.wte.to(dtype=DTYPE)
+            for ve in self.value_embeds.values():
+                ve.to(dtype=DTYPE)
 
     def _precompute_rotary_embeddings(self, seq_len, head_dim, base=10000, device=None):
         if device is None:
