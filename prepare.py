@@ -33,7 +33,7 @@ EVAL_TOKENS = 40 * 524288  # number of tokens for val eval
 
 # Auto-detect GPU and adjust for memory-constrained platforms (e.g. Colab T4)
 if torch.cuda.is_available():
-    _mem_gb = torch.cuda.get_device_properties(0).total_mem / 1024**3
+    _mem_gb = torch.cuda.get_device_properties(0).total_memory / 1024**3
     if _mem_gb < 20:  # T4 (16GB), P100 (16GB), etc.
         MAX_SEQ_LEN = 512
         EVAL_TOKENS = 10 * 524288  # ~5M tokens (faster eval on smaller GPUs)
