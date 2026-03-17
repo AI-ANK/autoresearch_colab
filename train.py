@@ -474,7 +474,7 @@ DEPTH = 8               # number of transformer layers
 DEVICE_BATCH_SIZE = 128  # per-device batch size (reduce if OOM)
 
 # Auto-detect and override for memory-constrained GPUs (e.g. Colab T4)
-GPU_MEM_GB = torch.cuda.get_device_properties(0).total_mem / 1024**3
+GPU_MEM_GB = torch.cuda.get_device_properties(0).total_memory / 1024**3
 if GPU_MEM_GB < 20:
     DEPTH = min(DEPTH, 4)
     DEVICE_BATCH_SIZE = min(DEVICE_BATCH_SIZE, 32)
